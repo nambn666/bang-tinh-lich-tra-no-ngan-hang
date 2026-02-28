@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Thành Công! Kiểm Tra Email Của Bạn - Nguyễn Nam BĐS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #fbfbfb;
+            --white: #ffffff;
+            --ink: #111827;
+            --ink-light: #4b5563;
+            --accent: #C9A34A;
+            --red: #dc2626;
+            --radius: 24px;
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; padding: 40px 20px; }
+        .container { max-width: 700px; margin: 0 auto; text-align: center; }
+        
+        .header h1 { color: var(--red); font-size: 2.5rem; margin-bottom: 12px; }
+        .header p { font-size: 1.2rem; color: var(--ink-light); margin-bottom: 40px; }
+
+        .steps { display: grid; gap: 24px; margin-bottom: 40px; }
+        .step-card { background: var(--white); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: left; display: flex; flex-direction: column; gap: 20px; }
+        .step-card h3 { font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .step-card h3 span { background: var(--accent); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .step-img { width: 100%; border-radius: 12px; border: 1px solid #eee; }
+
+        .checklist { background: #fff9f0; border: 1px dashed var(--accent); padding: 24px; border-radius: 16px; text-align: left; margin-bottom: 40px; }
+        .checklist h4 { margin-bottom: 16px; color: var(--accent); }
+        .checklist ul { list-style: none; }
+        .checklist li { margin-bottom: 12px; display: flex; gap: 10px; font-size: 0.95rem; }
+        .checklist li svg { color: #10b981; flex-shrink: 0; }
+        .important { color: var(--red); font-weight: 700; }
+
+        .note { font-size: 0.85rem; color: var(--ink-light); margin-bottom: 32px; }
+        .btn-back { display: inline-block; padding: 16px 32px; background: var(--ink); color: white; border-radius: 100px; text-decoration: none; font-weight: 600; transition: 0.3s; }
+        .btn-back:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.8rem; }
+            .step-card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ĐÃ GỬI EMAIL!</h1>
+            <p>Hãy làm theo hướng dẫn 3 bước bên dưới để nhận bảng tính.</p>
+        </div>
+
+        <div class="steps">
+            <div class="step-card">
+                <h3><span>1</span> Mở hộp thư đến của bạn</h3>
+                <img src="https://i.postimg.cc/GmP1Y4KN/Bu_o_c_1.png" alt="Bước 1" class="step-img" loading="lazy">
+            </div>
+            <div class="step-card">
+                <h3><span>2</span> Kiểm tra tab Quảng cáo (nếu dùng Gmail)</h3>
+                <img src="https://i.postimg.cc/XYK0FrLt/Bu_o_c_2.png" alt="Bước 2" class="step-img" loading="lazy">
+            </div>
+            <div class="step-card">
+                <h3><span>3</span> Kiểm tra Thư rác (Spam)</h3>
+                <img src="https://i.postimg.cc/wvh1tXMV/Bu-o-c-3-new.png" alt="Bước 3" class="step-img" loading="lazy">
+            </div>
+        </div>
+
+        <div class="checklist">
+            <h4>✅ Checklist quan trọng:</h4>
+            <ul>
+                <li>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Kiểm tra Inbox hoặc tab Promotions (Quảng cáo).
+                </li>
+                <li>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Nếu không thấy, kiểm tra Spam (Thư rác).
+                </li>
+                <li>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <div class="important">QUAN TRỌNG: Nếu mail nằm trong Spam, hãy mở email và bấm "Báo không phải thư rác" để nhận được các tài liệu tiếp theo.</div>
+                </li>
+            </ul>
+        </div>
+
+        <p class="note">* Email có thể mất 1–2 phút để đến hộp thư của bạn.</p>
+
+        <a href="/" class="btn-back">← Quay lại trang chính</a>
+
+        <div style="margin-top: 60px; opacity: 0.5; font-size: 0.8rem;">
+            NGUYỄN NAM BĐS
+        </div>
+    </div>
+</body>
+</html>
