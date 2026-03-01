@@ -129,23 +129,41 @@ const LandingPage = () => {
     // Configuration
     const mauticUrl = (import.meta as any).env.VITE_MAUTIC_URL || 'https://crm.nambds.vn';
     const formId = (import.meta as any).env.VITE_MAUTIC_FORM_ID || '9';
-    const gasUrl = (import.meta as any).env.VITE_GAS_URL || 'https://script.google.com/macros/s/AKfycbwO7Sx6M7ccS0v_c1PYyiNpH5Euxjcy9PzxxXpqrRgHlH_Lm5XNcgrPNC4MgOFyypcs_g/exec'; // Google Apps Script URL
+    const gasUrl = (import.meta as any).env.VITE_GAS_URL || 'https://script.google.com/macros/s/AKfycby_h9nhCldQYN_onYtMjIMpfi28QO2sOmu73BFf8IS7ufxhka7-lAqv5C56SUjByNcpWA/exec'; // Google Apps Script URL
 
     if (gasUrl) {
       try {
-        // Submit via Google Apps Script Proxy (Avoids CORS and more reliable)
-        await fetch(gasUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            name: name,
-            email: email,
-            formId: formId
-          }).toString(),
-        });
+        // Create a hidden form to submit to GAS (Most reliable way to avoid CORS issues with GAS)
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = gasUrl;
+        form.style.display = 'none';
+        form.target = 'hidden_iframe';
+
+        const fields = {
+          'mauticform[firstname]': name,
+          'mauticform[email]': email,
+          'mauticform[formId]': formId,
+          'mauticform[source]': window.location.hostname
+        };
+
+        for (const [key, value] of Object.entries(fields)) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value;
+          form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+        
+        // Cleanup after a short delay
+        setTimeout(() => {
+          document.body.removeChild(form);
+        }, 1000);
+
+        console.log('Data sent to GAS proxy');
       } catch (error) {
         console.error('GAS submission error:', error);
       }
@@ -153,7 +171,7 @@ const LandingPage = () => {
       try {
         // Direct submission to Mautic (Fallback)
         const mauticData = new FormData();
-        mauticData.append('mauticform[name]', name);
+        mauticData.append('mauticform[firstname]', name);
         mauticData.append('mauticform[email]', email);
         mauticData.append('mauticform[formId]', formId);
         mauticData.append('mauticform[return]', window.location.href);
@@ -178,6 +196,9 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Hidden iframe for form submission */}
+      <iframe name="hidden_iframe" id="hidden_iframe" style={{ display: 'none' }}></iframe>
+
       {/* Header */}
       <header className="py-6 border-b border-black/5">
         <div className="container mx-auto px-6">
