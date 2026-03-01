@@ -129,10 +129,12 @@ const LandingPage = () => {
     // Configuration
     const mauticUrl = (import.meta as any).env.VITE_MAUTIC_URL || 'https://crm.nambds.vn';
     const formId = (import.meta as any).env.VITE_MAUTIC_FORM_ID || '9';
-    const gasUrl = (import.meta as any).env.VITE_GAS_URL || 'https://script.google.com/macros/s/AKfycby_h9nhCldQYN_onYtMjIMpfi28QO2sOmu73BFf8IS7ufxhka7-lAqv5C56SUjByNcpWA/exec'; // Google Apps Script URL
+    const gasUrl = (import.meta as any).env.VITE_GAS_URL || 'https://script.google.com/macros/s/AKfycbx-ugcIdVDiLCQ1UN4dxAEpzgGkRbiK0xLjGpit6Ta5YWNWwEWJG9zRzkIk3MSY8L0PUA/exec'; // Google Apps Script URL
 
     if (gasUrl) {
       try {
+        console.log('Submitting to GAS:', { name, email, formId, gasUrl });
+        
         // Create a hidden form to submit to GAS (Most reliable way to avoid CORS issues with GAS)
         const form = document.createElement('form');
         form.method = 'POST';
@@ -144,7 +146,8 @@ const LandingPage = () => {
           'mauticform[firstname]': name,
           'mauticform[email]': email,
           'mauticform[formId]': formId,
-          'mauticform[source]': window.location.hostname
+          'mauticform[source]': window.location.hostname,
+          'mauticform[return]': ''
         };
 
         for (const [key, value] of Object.entries(fields)) {
@@ -158,14 +161,19 @@ const LandingPage = () => {
         document.body.appendChild(form);
         form.submit();
         
-        // Cleanup after a short delay
+        // Wait 2.5 seconds before navigating to ensure the request is fully sent and processed by GAS
         setTimeout(() => {
-          document.body.removeChild(form);
-        }, 1000);
+          if (document.body.contains(form)) {
+            document.body.removeChild(form);
+          }
+          navigate('/thank-you');
+        }, 2500);
 
-        console.log('Data sent to GAS proxy');
       } catch (error) {
         console.error('GAS submission error:', error);
+        setIsSubmitting(false);
+        // Fallback to navigation if error occurs
+        setTimeout(() => navigate('/thank-you'), 500);
       }
     } else if (mauticUrl) {
       try {
@@ -181,13 +189,16 @@ const LandingPage = () => {
           body: mauticData,
           mode: 'no-cors',
         });
+        
+        navigate('/thank-you');
       } catch (error) {
         console.error('Mautic submission error:', error);
+        navigate('/thank-you');
       }
+    } else {
+      // If no URLs configured, just navigate
+      navigate('/thank-you');
     }
-
-    // Always navigate to thank-you page after attempt
-    navigate('/thank-you');
   };
 
   const scrollToForm = () => {
