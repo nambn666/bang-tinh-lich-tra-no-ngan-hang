@@ -116,9 +116,42 @@ const LandingPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // In real app, you'd send data here
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+
+    // Mautic Configuration from environment variables
+    const mauticUrl = (import.meta as any).env.VITE_MAUTIC_URL || '';
+    const formId = (import.meta as any).env.VITE_MAUTIC_FORM_ID || '1';
+
+    if (mauticUrl) {
+      try {
+        // Prepare data for Mautic
+        // Mautic expects field names in the format mauticform[fieldname]
+        const mauticData = new FormData();
+        mauticData.append('mauticform[name]', name);
+        mauticData.append('mauticform[email]', email);
+        mauticData.append('mauticform[formId]', formId);
+        mauticData.append('mauticform[return]', window.location.href);
+
+        // Submit to Mautic
+        await fetch(`${mauticUrl}/form/submit?formId=${formId}`, {
+          method: 'POST',
+          body: mauticData,
+          mode: 'no-cors', // Mautic often doesn't have CORS enabled, no-cors allows the request to go through
+        });
+      } catch (error) {
+        console.error('Mautic submission error:', error);
+      }
+    }
+
+    // Always navigate to thank-you page after attempt
     navigate('/thank-you');
   };
 
@@ -190,6 +223,7 @@ const LandingPage = () => {
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input 
                         type="text" 
+                        name="name"
                         required 
                         placeholder="Ví dụ: Nguyễn Văn A"
                         className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 focus:border-accent outline-none transition-all"
@@ -202,6 +236,7 @@ const LandingPage = () => {
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input 
                         type="email" 
+                        name="email"
                         required 
                         placeholder="email@gmail.com"
                         className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 focus:border-accent outline-none transition-all"
@@ -216,9 +251,10 @@ const LandingPage = () => {
                   </label>
                   <button 
                     type="submit"
-                    className="w-full py-5 bg-accent hover:bg-accent-dark text-white rounded-2xl font-bold text-lg shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2"
+                    disabled={isSubmitting}
+                    className="w-full py-5 bg-accent hover:bg-accent-dark text-white rounded-2xl font-bold text-lg shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    GỬI FILE CHO TÔI <ArrowRight size={20} />
+                    {isSubmitting ? 'ĐANG GỬI...' : 'GỬI FILE CHO TÔI'} <ArrowRight size={20} />
                   </button>
                   <div className="text-center text-[10px] text-ink-light font-medium uppercase tracking-widest mt-4">
                     🔒 Bảo mật tuyệt đối • Không spam
