@@ -126,25 +126,42 @@ const LandingPage = () => {
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
 
-    // Mautic Configuration from environment variables
-    const mauticUrl = (import.meta as any).env.VITE_MAUTIC_URL || '';
-    const formId = (import.meta as any).env.VITE_MAUTIC_FORM_ID || '1';
+    // Configuration
+    const mauticUrl = (import.meta as any).env.VITE_MAUTIC_URL || 'https://crm.nambds.vn';
+    const formId = (import.meta as any).env.VITE_MAUTIC_FORM_ID || '9';
+    const gasUrl = (import.meta as any).env.VITE_GAS_URL || 'https://script.google.com/macros/s/AKfycbwO7Sx6M7ccS0v_c1PYyiNpH5Euxjcy9PzxxXpqrRgHlH_Lm5XNcgrPNC4MgOFyypcs_g/exec'; // Google Apps Script URL
 
-    if (mauticUrl) {
+    if (gasUrl) {
       try {
-        // Prepare data for Mautic
-        // Mautic expects field names in the format mauticform[fieldname]
+        // Submit via Google Apps Script Proxy (Avoids CORS and more reliable)
+        await fetch(gasUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            name: name,
+            email: email,
+            formId: formId
+          }).toString(),
+        });
+      } catch (error) {
+        console.error('GAS submission error:', error);
+      }
+    } else if (mauticUrl) {
+      try {
+        // Direct submission to Mautic (Fallback)
         const mauticData = new FormData();
         mauticData.append('mauticform[name]', name);
         mauticData.append('mauticform[email]', email);
         mauticData.append('mauticform[formId]', formId);
         mauticData.append('mauticform[return]', window.location.href);
 
-        // Submit to Mautic
         await fetch(`${mauticUrl}/form/submit?formId=${formId}`, {
           method: 'POST',
           body: mauticData,
-          mode: 'no-cors', // Mautic often doesn't have CORS enabled, no-cors allows the request to go through
+          mode: 'no-cors',
         });
       } catch (error) {
         console.error('Mautic submission error:', error);
